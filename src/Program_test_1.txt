@@ -1,0 +1,24 @@
+public function main() : void
+    int a = 10;
+    int b = 20;
+    int sum = a + b;
+
+    if (sum > 25) then
+        print("Suma jest większa niż 25");
+    elsif (sum == 25) then
+        print("Suma jest równa 25");
+    else
+        print("Suma jest mniejsza niż 25");
+    endif
+
+    for (int i = 0; i < 5; i++) then
+        print("Iteracja: " + i);
+    endfor
+
+    int result = add(a, b);
+    print("Wynik dodawania: " + result);
+endfunction
+
+public function add(int x, int y) : int
+    return x + y;
+endfunction
