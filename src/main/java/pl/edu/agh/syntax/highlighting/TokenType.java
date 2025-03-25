@@ -1,67 +1,80 @@
 package pl.edu.agh.syntax.highlighting;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Represents all possible token types for the custom language.
+ */
 public enum TokenType {
-    IDENTIFIER, // variable name i.e. myVar100
-    INTEGER, // int i.e. -100
-    FLOAT, // float i.e. 1.0
-    STRING, // string i.e. "hello"
-    BOOLEAN, // bool
-    NULL, // null
-    PLUS, // +
-    MINUS, // -
-    MULTIPLICATION, // *
-    DIVISION, // /
-    MODULO, // %
-    INCREMENT, // ++
-    ASSIGN, // =
-    EQUALS, // ==
-    DECREMENT, // --
-    PLUS_EQUALS, // +=
-    MINUS_EQUALS, // -=
-    MULTIPLICATION_EQUALS, // *=
-    DIVISION_EQUALS, // /=
-    MODULO_EQUALS, // %=
-    NOT_EQUALS, // !=
-    GREATER_THAN, // >
-    LESS_THAN, // <
-    GREATER_THAN_EQUALS, // >=
-    LESS_THAN_EQUALS, // <=
-    LEFT_BRACKET, // (
-    RIGHT_BRACKET, // )
-    LEFT_SQUARE_BRACKET, // [
-    RIGHT_SQUARE_BRACKET, // ]
-    CONTINUE, // continue
-    BREAK, // break
-    SEMICOLON, // ;
-    COMMA, // ,
-    DOT, // .
-    AND, // and
-    OR, // or
-    NOT, // not
-    IF, // if
-    THEN, // then
-    ELSIF, // elsif
-    ELSE, // else
-    ENDIF, // endif
-    WHILE, // while
-    ENDWHILE, // endwhile
-    FOR, // for
-    ENDFOR, // endfor
-    RETURN, // return
-    FUNCTION, // function
-    ENDFUNCTION, // endfunction
-    CLASS, // class
-    ENDCLASS, // endclass
-    CONSTRUCTOR, // constructor
-    ENDCONSTRUCTOR, // endconstructor
-    PUBLIC, // public
-    PRIVATE, // private
-    PROTECTED, // protected
-    STATIC, // static
-    CONST, // const
-    COMMENT, // #
-    NEW, // new
-    UNKNOWN; // unknown token
+
+    IDENTIFIER,
+
+    KEYWORD,
+
+    INTEGER,
+    FLOAT,
+    STRING,
+
+    BOOLEAN,
+
+    AND,
+    OR,
+    NOT,
+
+    PLUS,
+    MINUS,
+    MULTIPLICATION,
+    DIVISION,
+    MODULO,
+
+    INCREMENT,
+    DECREMENT,
+    ASSIGN,
+
+    EQUALS,
+    PLUS_EQUALS,
+    MINUS_EQUALS,
+    MULTIPLICATION_EQUALS,
+    DIVISION_EQUALS,
+    MODULO_EQUALS,
+    NOT_EQUALS,
+    GREATER_THAN,
+    LESS_THAN,
+    GREATER_THAN_EQUALS,
+    LESS_THAN_EQUALS,
+
+    LEFT_BRACKET,
+    RIGHT_BRACKET,
+    LEFT_SQUARE_BRACKET,
+    RIGHT_SQUARE_BRACKET,
+
+    SEMICOLON,
+    COMMA,
+    DOT,
+    COLON,
+
+    COMMENT,
+
+    UNKNOWN;
+
+    private static final Set<String> KEYWORDS;
+    static {
+        Set<String> temp = new HashSet<>();
+
+        Collections.addAll(temp,
+                "if", "then", "elsif", "else", "endif",
+                "while", "endwhile", "for", "endfor",
+                "return", "function", "endfunction",
+                "class", "endclass", "constructor", "endconstructor",
+                "public", "private", "protected", "static", "const",
+                "new", "continue", "break",
+                "extends", "implements", "try", "catch", "throw", "bool"
+        );
+        KEYWORDS = Collections.unmodifiableSet(temp);
+    }
+
 
     public static TokenType fromValue(String value) {
         if (value == null || value.isEmpty()) {
@@ -121,84 +134,32 @@ public enum TokenType {
                 return COMMA;
             case ".":
                 return DOT;
+            case ":":
+                return COLON;
             case "#":
                 return COMMENT;
+            default:
         }
 
-        switch (value.toLowerCase()) {
-            case "and":
-                return AND;
-            case "or":
-                return OR;
-            case "not":
-                return NOT;
-            case "if":
-                return IF;
-            case "then":
-                return THEN;
-            case "elsif":
-                return ELSIF;
-            case "else":
-                return ELSE;
-            case "endif":
-                return ENDIF;
-            case "while":
-                return WHILE;
-            case "endwhile":
-                return ENDWHILE;
-            case "for":
-                return FOR;
-            case "endfor":
-                return ENDFOR;
-            case "return":
-                return RETURN;
-            case "function":
-                return FUNCTION;
-            case "endfunction":
-                return ENDFUNCTION;
-            case "class":
-                return CLASS;
-            case "endclass":
-                return ENDCLASS;
-            case "constructor":
-                return CONSTRUCTOR;
-            case "endconstructor":
-                return ENDCONSTRUCTOR;
-            case "public":
-                return PUBLIC;
-            case "private":
-                return PRIVATE;
-            case "protected":
-                return PROTECTED;
-            case "static":
-                return STATIC;
-            case "const":
-                return CONST;
-            case "new":
-                return NEW;
-            case "continue":
-                return CONTINUE;
-            case "break":
-                return BREAK;
-            case "null":
-                return NULL;
-            case "true":
-            case "false":
-                return BOOLEAN;
+        String lowerCase = value.toLowerCase();
+        if (KEYWORDS.contains(lowerCase)) {
+            return KEYWORD;
         }
-
         if (isInteger(value)) {
             return INTEGER;
         } else if (isFloat(value)) {
             return FLOAT;
         } else if (isString(value)) {
             return STRING;
-        } else if (isIdentifier(value)) {
+        }
+
+        if (isIdentifier(value)) {
             return IDENTIFIER;
         }
 
         return UNKNOWN;
     }
+
 
     private static boolean isIdentifier(String value) {
         if (Character.isDigit(value.charAt(0))) {
@@ -213,31 +174,30 @@ public enum TokenType {
         return true;
     }
 
+
     private static boolean isInteger(String value) {
         int startIndex = 0;
         if (value.length() > 1 && (value.charAt(0) == '+' || value.charAt(0) == '-')) {
             startIndex = 1;
         }
-
         for (int i = startIndex; i < value.length(); i++) {
             if (!Character.isDigit(value.charAt(i))) {
                 return false;
             }
         }
-
+        // Must have at least 1 digit
         return value.length() > startIndex;
     }
 
-    private static boolean isFloat(String value) {
-        int valueLength = value.length();
-        int startIndex = 0;
 
+    private static boolean isFloat(String value) {
+        int startIndex = 0;
         if (value.charAt(0) == '+' || value.charAt(0) == '-') {
             startIndex = 1;
         }
         boolean hasDecimalPoint = false;
         boolean hasDigits = false;
-        for (int i = startIndex; i < valueLength; i++) {
+        for (int i = startIndex; i < value.length(); i++) {
             char c = value.charAt(i);
             if (c == '.') {
                 if (hasDecimalPoint) {
@@ -253,10 +213,10 @@ public enum TokenType {
         return hasDigits && hasDecimalPoint;
     }
 
+
     private static boolean isString(String value) {
-        if (value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
-            return false;
-        }
-        return true;
+        return value.length() >= 2
+                && value.charAt(0) == '"'
+                && value.charAt(value.length() - 1) == '"';
     }
 }

@@ -22,6 +22,7 @@ public class Scanner implements Closeable {
     }
 
     public Token nextToken() throws IOException {
+
         if (currentLine != null) {
             skipWhitespaces();
         }
@@ -34,23 +35,48 @@ public class Scanner implements Closeable {
             skipWhitespaces();
         }
 
+        char currentChar = currentLine.charAt(columnIndex);
+        int startColumn = columnIndex;
+
+        if (currentChar == '"') {
+            StringBuilder tokenValueBuilder = new StringBuilder();
+            tokenValueBuilder.append(currentChar);
+            columnIndex++;
+            while (columnIndex < currentLine.length()) {
+                currentChar = currentLine.charAt(columnIndex);
+                tokenValueBuilder.append(currentChar);
+                columnIndex++;
+                if (currentChar == '"') {
+                    break;
+                }
+            }
+            return new Token(TokenType.STRING, tokenValueBuilder.toString(), lineIndex, startColumn);
+        }
+
         StringBuilder tokenValueBuilder = new StringBuilder();
         TokenType tokenValueType = TokenType.UNKNOWN;
 
         while (columnIndex < currentLine.length()) {
             char c = currentLine.charAt(columnIndex);
-            tokenValueBuilder.append(c);
+            String tentative = tokenValueBuilder.toString() + c;
+            TokenType tentativeType = TokenType.fromValue(tentative);
 
-            TokenType newTokenValueType = TokenType.fromValue(tokenValueBuilder.toString());
-            if (newTokenValueType == TokenType.UNKNOWN) {
-                tokenValueBuilder.deleteCharAt(tokenValueBuilder.length() - 1);
-                break;
+            if (tentativeType == TokenType.UNKNOWN) {
+                if (tokenValueBuilder.length() > 0) {
+                    break;
+                } else {
+                    columnIndex++;
+                    startColumn = columnIndex;
+                    continue;
+                }
             } else {
-                tokenValueType = newTokenValueType;
+                tokenValueBuilder.append(c);
+                tokenValueType = tentativeType;
                 columnIndex++;
             }
         }
-        return new Token(tokenValueType, tokenValueBuilder.toString(), lineIndex, columnIndex);
+
+        return new Token(tokenValueType, tokenValueBuilder.toString(), lineIndex, startColumn);
     }
 
     private void loadNextLine() throws IOException, EOFException {
