@@ -37,9 +37,9 @@ public class Scanner implements Closeable {
 
         char currentChar = currentLine.charAt(columnIndex);
         int startColumn = columnIndex;
+        StringBuilder tokenValueBuilder = new StringBuilder();
 
         if (currentChar == '"') {
-            StringBuilder tokenValueBuilder = new StringBuilder();
             tokenValueBuilder.append(currentChar);
             columnIndex++;
             while (columnIndex < currentLine.length()) {
@@ -50,10 +50,25 @@ public class Scanner implements Closeable {
                     break;
                 }
             }
-            return new Token(TokenType.STRING, tokenValueBuilder.toString(), lineIndex, startColumn);
+            return new Token(
+                    TokenType.STRING, tokenValueBuilder.toString(), lineIndex, startColumn);
         }
 
-        StringBuilder tokenValueBuilder = new StringBuilder();
+        if (currentChar == '#') {
+            tokenValueBuilder.append(currentChar);
+            columnIndex++;
+            while (columnIndex < currentLine.length()) {
+                currentChar = currentLine.charAt(columnIndex);
+                tokenValueBuilder.append(currentChar);
+                columnIndex++;
+                if (currentChar == '\n') {
+                    break;
+                }
+                return new Token(
+                        TokenType.COMMENT, tokenValueBuilder.toString(), lineIndex, startColumn);
+            }
+        }
+
         TokenType tokenValueType = TokenType.UNKNOWN;
 
         while (columnIndex < currentLine.length()) {

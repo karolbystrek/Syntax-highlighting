@@ -4,11 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Represents all possible token types for the custom language.
- */
 public enum TokenType {
-
     IDENTIFIER,
 
     KEYWORD,
@@ -60,21 +56,44 @@ public enum TokenType {
     UNKNOWN;
 
     private static final Set<String> KEYWORDS;
+
     static {
         Set<String> temp = new HashSet<>();
 
-        Collections.addAll(temp,
-                "if", "then", "elsif", "else", "endif",
-                "while", "endwhile", "for", "endfor",
-                "return", "function", "endfunction",
-                "class", "endclass", "constructor", "endconstructor",
-                "public", "private", "protected", "static", "const",
-                "new", "continue", "break",
-                "extends", "implements", "try", "catch", "throw", "bool"
-        );
+        Collections.addAll(
+                temp,
+                "if",
+                "then",
+                "elsif",
+                "else",
+                "endif",
+                "while",
+                "endwhile",
+                "for",
+                "endfor",
+                "return",
+                "function",
+                "endfunction",
+                "class",
+                "endclass",
+                "constructor",
+                "endconstructor",
+                "public",
+                "private",
+                "protected",
+                "static",
+                "const",
+                "new",
+                "continue",
+                "break",
+                "extends",
+                "implements",
+                "try",
+                "catch",
+                "throw",
+                "bool");
         KEYWORDS = Collections.unmodifiableSet(temp);
     }
-
 
     public static TokenType fromValue(String value) {
         if (value == null || value.isEmpty()) {
@@ -160,7 +179,6 @@ public enum TokenType {
         return UNKNOWN;
     }
 
-
     private static boolean isIdentifier(String value) {
         if (Character.isDigit(value.charAt(0))) {
             return false;
@@ -174,7 +192,6 @@ public enum TokenType {
         return true;
     }
 
-
     private static boolean isInteger(String value) {
         int startIndex = 0;
         if (value.length() > 1 && (value.charAt(0) == '+' || value.charAt(0) == '-')) {
@@ -185,10 +202,8 @@ public enum TokenType {
                 return false;
             }
         }
-        // Must have at least 1 digit
         return value.length() > startIndex;
     }
-
 
     private static boolean isFloat(String value) {
         int startIndex = 0;
@@ -212,7 +227,6 @@ public enum TokenType {
         }
         return hasDigits && hasDecimalPoint;
     }
-
 
     private static boolean isString(String value) {
         return value.length() >= 2
