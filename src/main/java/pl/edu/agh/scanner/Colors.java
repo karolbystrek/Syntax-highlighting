@@ -1,4 +1,4 @@
-package pl.edu.agh.syntax.highlighting;
+package pl.edu.agh.scanner;
 
 public enum Colors {
     IDENTIFIER("#000000"),

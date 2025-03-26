@@ -4,11 +4,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>pl.edu.agh.syntax.highlighting</groupId>
-  <artifactId>syntax-highlighting</artifactId>
+  <groupId>pl.edu.agh.scanner</groupId>
+  <artifactId>scanner</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>syntax-highlighting</name>
+  <name>scanner</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -82,7 +82,7 @@
           <manifest>
             <addClasspath>true</addClasspath>
             <classpathPrefix>lib/</classpathPrefix>
-            <mainClass>pl.edu.agh.syntax.highlighting.App</mainClass>
+            <mainClass>pl.edu.agh.scanner.App</mainClass>
           </manifest>
         </archive>
       </configuration>

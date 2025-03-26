@@ -1,4 +1,4 @@
-package pl.edu.agh.syntax.highlighting;
+package pl.edu.agh.scanner;
 
 import java.util.Collections;
 import java.util.HashSet;
