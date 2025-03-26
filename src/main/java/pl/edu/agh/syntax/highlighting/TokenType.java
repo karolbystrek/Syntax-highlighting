@@ -6,30 +6,23 @@ import java.util.Set;
 
 public enum TokenType {
     IDENTIFIER,
-
     KEYWORD,
     PRIMITIVE_DATA_TYPE,
-
     INTEGER,
     FLOAT,
     STRING,
-
     BOOL,
-
     AND,
     OR,
     NOT,
-
     PLUS,
     MINUS,
     MULTIPLICATION,
     DIVISION,
     MODULO,
-
     INCREMENT,
     DECREMENT,
     ASSIGN,
-
     EQUALS,
     PLUS_EQUALS,
     MINUS_EQUALS,
@@ -41,21 +34,16 @@ public enum TokenType {
     LESS_THAN,
     GREATER_THAN_EQUALS,
     LESS_THAN_EQUALS,
-
     LEFT_BRACKET,
     RIGHT_BRACKET,
     LEFT_SQUARE_BRACKET,
     RIGHT_SQUARE_BRACKET,
-
     SEMICOLON,
     COMMA,
     DOT,
     COLON,
-
     COMMENT,
-
     UNKNOWN,
-
     NEW_LINE;
 
     private static final Set<String> KEYWORDS;
@@ -92,6 +80,7 @@ public enum TokenType {
                 "extends",
                 "implements",
                 "try",
+                "endtry",
                 "catch",
                 "throw");
         KEYWORDS = Collections.unmodifiableSet(temp);
@@ -187,15 +176,9 @@ public enum TokenType {
         return UNKNOWN;
     }
 
-
-
     private static boolean isDataType(String value) {
         Set<String> dataTypes = new HashSet<>();
-        Collections.addAll(dataTypes,
-                "int",
-                "float",
-                "double",
-                "bool");
+        Collections.addAll(dataTypes, "int", "float", "double", "bool");
         if (dataTypes.contains(value)) {
             return true;
         }
