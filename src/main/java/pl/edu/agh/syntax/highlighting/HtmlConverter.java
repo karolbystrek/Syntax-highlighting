@@ -166,9 +166,7 @@ public class HtmlConverter {
     private static void writeHtmlToFile(String htmlContent) {
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write(htmlContent);
-            System.out.println("HTML file generated successfully at: " + filePath);
         } catch (IOException e) {
-            System.err.println("Error writing HTML file: " + e.getMessage());
             e.printStackTrace();
         }
     }

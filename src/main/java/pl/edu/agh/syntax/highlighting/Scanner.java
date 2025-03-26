@@ -17,7 +17,6 @@ public class Scanner implements Closeable {
     private boolean isFirstLine;
 
 
-
     public Scanner(InputStream inputStream) throws IOException {
         this.reader = new BufferedReader(new InputStreamReader(inputStream));
         this.lineIndex = 0;
@@ -26,8 +25,6 @@ public class Scanner implements Closeable {
         this.loadedNewLine = false;
         this.isFirstLine = true;
     }
-
-
 
 
     public Token nextToken() throws IOException {
@@ -45,7 +42,11 @@ public class Scanner implements Closeable {
             } catch (EOFException e) {
                 return null;
             }
+
             skipWhitespaces();
+            if (currentLine.isEmpty()) {
+                return new Token(TokenType.NEW_LINE, "\\n", lineIndex, 0);
+            }
         }
 
         if (loadedNewLine) {
@@ -65,8 +66,6 @@ public class Scanner implements Closeable {
 
         return handleDefaultToken();
     }
-
-
 
 
     private Token handleDefaultToken() {
@@ -122,7 +121,6 @@ public class Scanner implements Closeable {
     }
 
 
-
     private Token handleComment() {
         int startColumn = columnIndex;
         StringBuilder tokenValueBuilder = new StringBuilder();
@@ -146,7 +144,6 @@ public class Scanner implements Closeable {
     }
 
 
-
     private void loadNextLine() throws IOException, EOFException {
         currentLine = reader.readLine();
         if (currentLine == null) {
@@ -157,14 +154,12 @@ public class Scanner implements Closeable {
     }
 
 
-
     private void skipWhitespaces() {
         while (columnIndex < currentLine.length()
                 && Character.isWhitespace(currentLine.charAt(columnIndex))) {
             columnIndex++;
         }
     }
-
 
 
     @Override
