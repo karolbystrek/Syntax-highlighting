@@ -1,6 +1,9 @@
-*
-!src/
-!pom.xml
-!.gitignore
-!*.txt
-!*.html
+# Ignore everything
+/*
+
+# But not these files/directories
+!/src/
+!/pom.xml
+!/.gitignore
+!/*.txt
+!/*.html
