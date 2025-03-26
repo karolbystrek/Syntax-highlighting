@@ -8,7 +8,7 @@ import java.util.List;
 public class App {
 
     public static void main(String[] args) {
-        String filePath = "src/main/resources/Program_test_1.txt";
+        String filePath = "Program_test_1.txt";
 
         List<Token> tokens = new LinkedList<>();
 

@@ -8,12 +8,13 @@ public enum TokenType {
     IDENTIFIER,
 
     KEYWORD,
+    PRIMITIVE_DATA_TYPE,
 
     INTEGER,
     FLOAT,
     STRING,
 
-    BOOLEAN,
+    BOOL,
 
     AND,
     OR,
@@ -53,7 +54,9 @@ public enum TokenType {
 
     COMMENT,
 
-    UNKNOWN;
+    UNKNOWN,
+
+    NEW_LINE;
 
     private static final Set<String> KEYWORDS;
 
@@ -90,8 +93,7 @@ public enum TokenType {
                 "implements",
                 "try",
                 "catch",
-                "throw",
-                "bool");
+                "throw");
         KEYWORDS = Collections.unmodifiableSet(temp);
     }
 
@@ -115,6 +117,8 @@ public enum TokenType {
                 return INCREMENT;
             case "--":
                 return DECREMENT;
+            case "!=":
+                return NOT_EQUALS;
             case "=":
                 return ASSIGN;
             case "==":
@@ -129,8 +133,6 @@ public enum TokenType {
                 return DIVISION_EQUALS;
             case "%=":
                 return MODULO_EQUALS;
-            case "!=":
-                return NOT_EQUALS;
             case ">":
                 return GREATER_THAN;
             case "<":
@@ -164,6 +166,12 @@ public enum TokenType {
         if (KEYWORDS.contains(lowerCase)) {
             return KEYWORD;
         }
+        if (isDataType(value)) {
+            return PRIMITIVE_DATA_TYPE;
+        }
+        if (lowerCase.equals("true") || lowerCase.equals("false")) {
+            return BOOL;
+        }
         if (isInteger(value)) {
             return INTEGER;
         } else if (isFloat(value)) {
@@ -177,6 +185,21 @@ public enum TokenType {
         }
 
         return UNKNOWN;
+    }
+
+
+
+    private static boolean isDataType(String value) {
+        Set<String> dataTypes = new HashSet<>();
+        Collections.addAll(dataTypes,
+                "int",
+                "float",
+                "double",
+                "bool");
+        if (dataTypes.contains(value)) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean isIdentifier(String value) {

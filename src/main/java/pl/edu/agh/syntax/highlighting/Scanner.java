@@ -13,62 +13,65 @@ public class Scanner implements Closeable {
     private String currentLine;
     private int lineIndex;
     private int columnIndex;
+    private boolean loadedNewLine;
+    private boolean isFirstLine;
+
+
 
     public Scanner(InputStream inputStream) throws IOException {
         this.reader = new BufferedReader(new InputStreamReader(inputStream));
         this.lineIndex = 0;
         this.columnIndex = 0;
         this.currentLine = null;
+        this.loadedNewLine = false;
+        this.isFirstLine = true;
     }
 
-    public Token nextToken() throws IOException {
 
+
+
+    public Token nextToken() throws IOException {
         if (currentLine != null) {
             skipWhitespaces();
         }
         while (currentLine == null || columnIndex >= currentLine.length()) {
             try {
                 loadNextLine();
+                if (!isFirstLine) {
+                    loadedNewLine = true;
+                } else {
+                    isFirstLine = false;
+                }
             } catch (EOFException e) {
                 return null;
             }
             skipWhitespaces();
         }
 
+        if (loadedNewLine) {
+            loadedNewLine = false;
+            return new Token(TokenType.NEW_LINE, "\\n", lineIndex, 0);
+        }
+
         char currentChar = currentLine.charAt(columnIndex);
-        int startColumn = columnIndex;
-        StringBuilder tokenValueBuilder = new StringBuilder();
 
         if (currentChar == '"') {
-            tokenValueBuilder.append(currentChar);
-            columnIndex++;
-            while (columnIndex < currentLine.length()) {
-                currentChar = currentLine.charAt(columnIndex);
-                tokenValueBuilder.append(currentChar);
-                columnIndex++;
-                if (currentChar == '"') {
-                    break;
-                }
-            }
-            return new Token(
-                    TokenType.STRING, tokenValueBuilder.toString(), lineIndex, startColumn);
+            return handleString();
         }
 
         if (currentChar == '#') {
-            tokenValueBuilder.append(currentChar);
-            columnIndex++;
-            while (columnIndex < currentLine.length()) {
-                currentChar = currentLine.charAt(columnIndex);
-                tokenValueBuilder.append(currentChar);
-                columnIndex++;
-                if (currentChar == '\n') {
-                    break;
-                }
-                return new Token(
-                        TokenType.COMMENT, tokenValueBuilder.toString(), lineIndex, startColumn);
-            }
+            return handleComment();
         }
 
+        return handleDefaultToken();
+    }
+
+
+
+
+    private Token handleDefaultToken() {
+        int startColumn = columnIndex;
+        StringBuilder tokenValueBuilder = new StringBuilder();
         TokenType tokenValueType = TokenType.UNKNOWN;
 
         while (columnIndex < currentLine.length()) {
@@ -90,9 +93,59 @@ public class Scanner implements Closeable {
                 columnIndex++;
             }
         }
-
         return new Token(tokenValueType, tokenValueBuilder.toString(), lineIndex, startColumn);
     }
+
+
+    private Token handleString() {
+        int startColumn = columnIndex;
+        StringBuilder tokenValueBuilder = new StringBuilder();
+
+        char currentChar = currentLine.charAt(columnIndex);
+        tokenValueBuilder.append(currentChar);
+        columnIndex++;
+
+        while (columnIndex < currentLine.length()) {
+            currentChar = currentLine.charAt(columnIndex);
+            tokenValueBuilder.append(currentChar);
+            columnIndex++;
+            if (currentChar == '"') {
+                break;
+            }
+        }
+        return new Token(
+                TokenType.STRING,
+                tokenValueBuilder.toString(),
+                lineIndex,
+                startColumn
+        );
+    }
+
+
+
+    private Token handleComment() {
+        int startColumn = columnIndex;
+        StringBuilder tokenValueBuilder = new StringBuilder();
+
+        char currentChar = currentLine.charAt(columnIndex);
+        tokenValueBuilder.append(currentChar);
+        columnIndex++;
+
+        while (columnIndex < currentLine.length()) {
+            currentChar = currentLine.charAt(columnIndex);
+            tokenValueBuilder.append(currentChar);
+            columnIndex++;
+        }
+
+        return new Token(
+                TokenType.COMMENT,
+                tokenValueBuilder.toString(),
+                lineIndex,
+                startColumn
+        );
+    }
+
+
 
     private void loadNextLine() throws IOException, EOFException {
         currentLine = reader.readLine();
@@ -103,12 +156,16 @@ public class Scanner implements Closeable {
         columnIndex = 0;
     }
 
+
+
     private void skipWhitespaces() {
         while (columnIndex < currentLine.length()
                 && Character.isWhitespace(currentLine.charAt(columnIndex))) {
             columnIndex++;
         }
     }
+
+
 
     @Override
     public void close() throws IOException {
