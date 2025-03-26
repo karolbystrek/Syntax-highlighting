@@ -2,42 +2,16 @@ package pl.edu.agh.syntax.highlighting;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class HtmlConverter {
 
     private static final String filePath = "Program_test_1.html";
     private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
-    private static final Set<String> INDENT_INCREASE_KEYWORDS = new HashSet<>();
-    private static final Set<String> INDENT_DECREASE_KEYWORDS = new HashSet<>();
-    private static final Set<String> INDENT_SAME_LEVEL_KEYWORDS = new HashSet<>();
+    private static final KeywordManager keywordManager = new KeywordManager();
 
     private static TokenType prevTokenType = null;
-
-    static {
-        INDENT_INCREASE_KEYWORDS.add("if");
-        INDENT_INCREASE_KEYWORDS.add("while");
-        INDENT_INCREASE_KEYWORDS.add("for");
-        INDENT_INCREASE_KEYWORDS.add("function");
-        INDENT_INCREASE_KEYWORDS.add("class");
-        INDENT_INCREASE_KEYWORDS.add("constructor");
-        INDENT_INCREASE_KEYWORDS.add("try");
-
-        INDENT_DECREASE_KEYWORDS.add("endif");
-        INDENT_DECREASE_KEYWORDS.add("endwhile");
-        INDENT_DECREASE_KEYWORDS.add("endfor");
-        INDENT_DECREASE_KEYWORDS.add("endfunction");
-        INDENT_DECREASE_KEYWORDS.add("endclass");
-        INDENT_DECREASE_KEYWORDS.add("endconstructor");
-        INDENT_DECREASE_KEYWORDS.add("endtry");
-
-        INDENT_SAME_LEVEL_KEYWORDS.add("catch");
-        INDENT_SAME_LEVEL_KEYWORDS.add("else");
-        INDENT_SAME_LEVEL_KEYWORDS.add("elsif");
-    }
 
     public static void convert(List<Token> tokens) {
         StringBuilder htmlContent = new StringBuilder();
@@ -61,8 +35,8 @@ public class HtmlConverter {
                     Token nextToken = tokens.get(i);
                     String nextTokenValue = nextToken.getValue().toLowerCase();
                     if (nextToken.getType() == TokenType.KEYWORD) {
-                        if (INDENT_DECREASE_KEYWORDS.contains(nextTokenValue) ||
-                                INDENT_SAME_LEVEL_KEYWORDS.contains(nextTokenValue)) {
+                        if (keywordManager.isIndentDecreaseKeyword(nextTokenValue) ||
+                            keywordManager.isIndentSameLevelKeyword(nextTokenValue)) {
                             indentLevel = Math.max(0, indentLevel - 1);
                         }
                     }
@@ -82,8 +56,8 @@ public class HtmlConverter {
             htmlContent.append(formatToken(token, prevTokenType));
 
             if (tokenType == TokenType.KEYWORD) {
-                if (INDENT_INCREASE_KEYWORDS.contains(tokenLowerCase) ||
-                        INDENT_SAME_LEVEL_KEYWORDS.contains(tokenLowerCase)) {
+                if (keywordManager.isIndentDecreaseKeyword(tokenLowerCase) ||
+                    keywordManager.isIndentSameLevelKeyword(tokenLowerCase)) {
                     indentLevel++;
                 }
             }
